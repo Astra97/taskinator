@@ -51,16 +51,18 @@ else {
 }
 
   };
-  var tasksToDoEl = document.querySelector("#tasks-to-do");
+
 
   var createTaskEl = function(taskDataObj) {
-
+    debugger
+    var tasksToDoEl = document.querySelector("#tasks-to-do")
     // create list item
 var listItemEl = document.createElement("li");
 listItemEl.className = "task-item";
 
  // add task id as a custom attribute
  listItemEl.setAttribute("data-task-id", taskIdCounter);
+ listItemEl.setAttribute("draggable", "true");
 
  var taskInfoEl = document.createElement("div");
  taskInfoEl.className = "task-info";
@@ -177,9 +179,42 @@ return actionContainerEl;
       tasksCompletedEl.appendChild(taskSelected);
     }
   };
+  var dragTaskHandler = function(event) {
+    var taskId = event.target.getAttribute("data-task-id");
+    event.dataTransfer.setData("text/plain", taskId);
+    var getId = event.dataTransfer.getData("text/plain");
+    console.log("getId:", getId, typeof getId);
+  } 
+  var dropZoneDragHandler = function(event) {
+    event.preventDefault();
+    if (taskListEl) {
+      event.preventDefault();
+    }
+      
+  };
+  var dropTaskHandler = function(event) {
+    var id = event.dataTransfer.getData("text/plain");
+    var draggableElement = document.querySelector("[data-task-id='" + id + "']");
+    var dropZoneEl = event.target.closest(".task-list");
+    var statusType = dropZoneEl.id;
+// set status of task based on dropZone id
+var statusSelectEl = draggableElement.querySelector("select[name='status-change']");
+if (statusType === "tasks-to-do") {
+  statusSelectEl.selectedIndex = 0;
+} 
+else if (statusType === "tasks-in-progress") {
+  statusSelectEl.selectedIndex = 1;
+} 
+else if (statusType === "tasks-completed") {
+  statusSelectEl.selectedIndex = 2;
+}
+dropZoneEl.appendChild(draggableElement);
+  };
 
 
-
-  pageContentEl.addEventListener("click", taskButtonHandler);
+  pageContentEl.addEventListener("dragstart", dragTaskHandler);
+  pageContentEl.addEventListener("dragover", dropZoneDragHandler);
   formEl.addEventListener("submit", taskFormHandler);
+  pageContentEl.addEventListener("click", taskButtonHandler);
+  pageContentEl.addEventListener("drop", dropTaskHandler);
   pageContentEl.addEventListener("change", taskStatusChangeHandler);
