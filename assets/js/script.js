@@ -186,9 +186,12 @@ return actionContainerEl;
     console.log("getId:", getId, typeof getId);
   } 
   var dropZoneDragHandler = function(event) {
+
     event.preventDefault();
     if (taskListEl) {
+
       event.preventDefault();
+      taskListEl.setAttribute("style", "background: rgba(68, 233, 255, 0.7); border-style: dashed;");
     }
       
   };
@@ -208,13 +211,22 @@ else if (statusType === "tasks-in-progress") {
 else if (statusType === "tasks-completed") {
   statusSelectEl.selectedIndex = 2;
 }
+dropZoneEl.removeAttribute("style");
 dropZoneEl.appendChild(draggableElement);
   };
+
+  var dragLeaveHandler = function(event) {
+    var taskListEl = event.target.closest(".task-list");
+if (taskListEl) {
+  taskListEl.removeAttribute("style");
+}
+  }
 
 
   pageContentEl.addEventListener("dragstart", dragTaskHandler);
   pageContentEl.addEventListener("dragover", dropZoneDragHandler);
   formEl.addEventListener("submit", taskFormHandler);
   pageContentEl.addEventListener("click", taskButtonHandler);
+  pageContentEl.addEventListener("dragleave", dragLeaveHandler);
   pageContentEl.addEventListener("drop", dropTaskHandler);
   pageContentEl.addEventListener("change", taskStatusChangeHandler);
